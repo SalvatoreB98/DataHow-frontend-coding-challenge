@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/SalvatoreB98/DataHow-frontend-coding-challenge#readme",
   "dependencies": {
+    "chart.js": "^3.5.0",
     "laravel-mix": "^6.0.25"
   },
   "devDependencies": {
