@@ -5,8 +5,8 @@ window.addEventListener("load", () => {
             searchedCountry: 'ITA',
             countries: [],
             currentDate: new Date(),
-            startDate: '',
-            stopDate: '',
+            startDate: moment('2021-01-01'),
+            stopDate:  moment('2021-07-25'),
             data: []
         },
         methods: {
@@ -45,14 +45,11 @@ window.addEventListener("load", () => {
 
 
             },
-            getCases(){
-                dates = this.getDatesArray();
-                dates.forEach(date => {
-                    axios.get(`https://covid-api.com/api/reports?date=${date}&iso=${this.searchedCountry}`).
-                    then((resp) => {
-                        this.data = resp.data.data
-                        console.log(resp.data.data)
-                    });
+            getCasesByDate(date){
+                axios.get(`https://covid-api.com/api/reports?date=${date}&iso=${this.searchedCountry}`).
+                then((resp) => {
+                    this.data.push(resp.data.data[0].active)
+                    console.log(resp.data.data[0].active)
                 });
                
             }
@@ -60,23 +57,19 @@ window.addEventListener("load", () => {
         },
         mounted() {
             //get countries with axios
-            axios.get('https://covid-api.com/api/regions?order=name', {
-                params: {
-
-                }
-            }
+            axios.get('https://covid-api.com/api/regions?order=name',
             ).then((resp) => {
                 this.countries = resp.data.data
-                // console.log(resp.data.data)
+                console.log(resp.data.data)
             });
             currentDate = moment(this.currentDate)
             var startDate = currentDate.subtract(90, "days").format("YYYY-MM-DD");
-            var startDate = moment('2021-01-02');
-            var endDate = moment('2021-01-12');
-            var dateList = this.getDatesArray(startDate,endDate);
+            var dateList = this.getDatesArray(this.startDate,this.stopDate);
             console.log(dateList);
-            this.getCases();
-            this.chart(dateList,);
+            dateList.forEach(date => {
+                this.getCasesByDate(date);
+            });
+            this.chart(dateList,this.data);
         }
     });
 })
