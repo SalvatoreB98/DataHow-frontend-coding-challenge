@@ -2,11 +2,11 @@ window.addEventListener("load", () => {
     const app = new Vue({
         el: '#app',
         data: {
-            searchedCountry: 'ITA',
+            searchedCountry: 'USA',
             countries: [],
             currentDate: new Date(),
             startDate: moment('2021-01-01'),
-            stopDate:  moment('2021-07-25'),
+            stopDate:  moment('2021-07-15'),
             data: []
         },
         methods: {
@@ -25,13 +25,16 @@ window.addEventListener("load", () => {
                 })
             },
             onChange() {
-                axios.get(`https://covid-api.com/api/reports?date=2020-04-16&iso=${this.searchedCountry}`, {
-                    params: {
-
-                    }
-                }
-                ).then((resp) => {
-                    console.log(resp.data.data)
+                axios.get(`https://covid-api.com/api/reports?date=2020-04-16&iso=${this.searchedCountry}`)
+                .then((resp) => {
+                    currentDate = moment(this.currentDate)
+                    var startDate = currentDate.subtract(90, "days").format("YYYY-MM-DD");
+                    var dateList = this.getDatesArray(this.startDate,this.stopDate);
+                    console.log(dateList);
+                    dateList.forEach(date => {
+                        this.getCasesByDate(date);
+                    });
+                    this.chart(dateList,this.data);
                 });
             },
             getDatesArray(startDate, endDate) {
@@ -48,8 +51,8 @@ window.addEventListener("load", () => {
             getCasesByDate(date){
                 axios.get(`https://covid-api.com/api/reports?date=${date}&iso=${this.searchedCountry}`).
                 then((resp) => {
-                    this.data.push(resp.data.data[0].active)
-                    console.log(resp.data.data[0].active)
+                    this.data.push(resp.data.data[20].active)
+                    console.log(resp.data.data)
                 });
                
             }
